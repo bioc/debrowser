@@ -87,11 +87,13 @@ getGOLeftMenu <- function() {
     a <- list(
     tags$head(tags$script(HTML(logSliderJScode("gopvalue")))),
     sliderInput("gopvalue", "p.adjust cut off",
-                min=0, max=10, value=6, sep = "", 
-                animate = FALSE),
+        min=0, max=10, value=6, sep = "", 
+        animate = FALSE),
     textInput("pvaluetxt", "or p.adjust", value = "0.01" ),
-        conditionalPanel( ( condition <- "input.goplot=='enrichGO' ||
-            input.goplot=='compare'" ),
+        getOrganismBox(),
+        conditionalPanel( ( condition <- "(input.goplot=='enrichGO' ||
+            (input.goplot=='compare' && input.gofunc!='enrichDO' &&
+            input.gofunc!='enrichKEGG'))" ),
             selectInput("ontology", "Choose an ontology:",
                 choices =  c( "CC", "MF", "BP"))
             ),
@@ -101,7 +103,8 @@ getGOLeftMenu <- function() {
             ),
             conditionalPanel( ( condition <- "input.goplot=='compare'"),
                 selectInput("gofunc", "Plot Function:",
-                choices =  c( "enrichGO", "enrichKEGG"))
+                choices =  c( "enrichGO", "enrichDO", "enrichPathway",
+                "enrichKEGG"))
             ),
             actionButton("startGO", "Submit"),
             downloadButton("downloadGOPlot", "Download Plots"))
@@ -154,8 +157,8 @@ getQCLeftMenu <- function() {
                 "mcquitty", "median", "centroid")),
                 selectInput("distance_method", "Distance Method:",
                 choices <- c("cor", "euclidean", "maximum", "manhattan",
-                "canberra", "binary", "minkowski")),
-        actionButton("startQCPlot", "Submit")),
+                "canberra", "binary", "minkowski"))),
+        actionButton("startQCPlot", "Submit"),
         conditionalPanel( (condition <- "input.qcplot=='pca'"),
             getPCselection(1, "x"),
             getPCselection(2, "y")
@@ -272,7 +275,7 @@ getInitialMenu <- function(input = NULL, output = NULL, session = NULL) {
 #'
 getProgramTitle <- function(session = NULL) {
     if (is.null(session)) return (NULL)
-    refreshbtn <- list(column(1, extendShinyjs(text = jscode),
+    refreshbtn <- list(column(1,
        actionButton("refresh", "", icon = icon("refresh"), offset=0)
        #actionButton("stopapp", "", icon = icon("stop"), offset=0)
        ))
@@ -281,7 +284,7 @@ getProgramTitle <- function(session = NULL) {
     if (is.null(title) || title != "no" ) 
         a <- list(refreshbtn, titlePanel("DEBrowser"))
     else
-        a <- list(refreshbtn, titlePanel("v1.0.0"))
+        a <- list(refreshbtn, titlePanel(" "))
     a
 }
 
@@ -570,6 +573,4 @@ hideObj <- function(btns = NULL) {
     for (btn in seq(1:length(btns)))
         shinyjs::hide(btns[btn])
 }
-
-jscode <- "shinyjs.refresh = function() { history.go(0); }"
 
