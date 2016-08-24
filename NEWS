@@ -1,4 +1,9 @@
 ************************************
+Version 1.0.9 Release
+***********************************
+- getGOPlot documentation fix
+
+************************************
 Version 1.0.8 Release
 ***********************************
 - GO Term table loads quicker
