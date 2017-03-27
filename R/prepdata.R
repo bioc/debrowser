@@ -144,18 +144,18 @@ setFilterParams <- function(session = NULL, input = NULL) {
             value = valpadj ) 
     }
     if (!is.null(input$gopvalue)){
-      if (input$gopvalue%%2)
-        gopval = (10 ^ (-1*as.integer(
-          (10-input$gopvalue)/2 )) ) /2
+        if (input$gopvalue%%2)
+            gopval = (10 ^ (-1*as.integer(
+            (10-input$gopvalue)/2 )) ) /2
       else
-        gopval = (10 ^ (-1*(10-input$gopvalue)/2))
+            gopval = (10 ^ (-1*(10-input$gopvalue)/2))
       if(input$gopvalue==0) gopval = 0
       updateTextInput(session, "pvaluetxt",
-                      value = gopval ) 
+          value = gopval ) 
     }
     if (!is.null(input$foldChange)){
-      valpadjfoldChange = input$foldChange
-      updateTextInput(session, "foldChangetxt",
+        valpadjfoldChange = input$foldChange
+        updateTextInput(session, "foldChangetxt",
                       value = valpadjfoldChange)
     }
 }
@@ -183,7 +183,7 @@ prepDEOutput <- function(data = NULL, cols = NULL,
     params <- inputconds$demethod_params[i]
     de_res <- runDE(data, cols, conds, params)
     de_res <- data.frame(de_res)
-    norm_data <- getNormalizedMatrix(data[, cols], "TMM")
+    norm_data <- getNormalizedMatrix(data[, cols])
     mean_cond <- c()
     mean_cond_first <- getMean(norm_data, de_res, 
         inputconds, 2*i-1)
@@ -202,6 +202,7 @@ prepDEOutput <- function(data = NULL, cols = NULL,
         "foldChange", "log10padj")
     m <- as.data.frame(m)
     m$padj[is.na(m[paste0("padj")])] <- 1
+    m$pvalue[is.na(m[paste0("pvalue")])] <- 1
     m
 }
 
@@ -232,13 +233,13 @@ applyFilters <- function(filt_data = NULL, cols = NULL, conds=NULL,
     norm_data <- getNormalizedMatrix(filt_data[, cols], 
         input$norm_method)
     g <- data.frame(cbind(cols, conds))
-    if (length(g[g$conds == x, "cols"]) > 1 )
+    if (length(as.vector(g[g$conds == x, "cols"])) > 1 )
         filt_data$x <- log10(rowMeans(norm_data[, 
             as.vector(g[g$conds == x, "cols"])]) + 0.1)
     else
         filt_data$x <- log10(norm_data[, 
              as.vector(g[g$conds == x, "cols"])] + 0.1)
-    if (length(g[g$conds == x, "cols"]) > 1 )
+    if (length(as.vector(g[g$conds == y, "cols"])) > 1 )
         filt_data$y <- log10(rowMeans(norm_data[, 
              as.vector(g[g$conds == y, "cols"])]) + 0.1)
     else
@@ -429,7 +430,8 @@ getGeneSetData <- function(data = NULL, geneset = NULL) {
     dat2$ID<-factor(as.character(dat2$ID))
 
     geneset4 <- unique(as.vector(unlist(lapply(toupper(geneset2), 
-        function(x){ sapply(dat2[(grepl(x, toupper(dat2[,"ID"]))), "ID"], as.character) }))))
+        function(x){ sapply(dat2[(grepl(x, toupper(dat2[,"ID"]))), "ID"], 
+                            as.character) }))))
     retset <- data.frame(dat2[geneset4, ])
     retset
 }
@@ -527,12 +529,6 @@ getDataForTables <- function(input = NULL, init_data = NULL,
             dat <- getSearchData(getDown(filt_data), input)
     }
     else if (input$dataset == "selected"){
-        if (!is.null(input$genenames) && input$interactive == TRUE){
-            if (!is.null(filt_data))
-                selected$data <- getSelHeat(filt_data, input)
-            else
-                selected$data <- getSelHeat(init_data, input)
-        }
         dat <- getSearchData(selected$data$getSelected(), input)
     }
     else if (input$dataset == "pcaset"){
