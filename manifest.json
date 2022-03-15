@@ -1,7 +1,7 @@
 {
   "version": 1,
   "locale": "en_US",
-  "platform": "4.1.1",
+  "platform": "4.1.2",
   "metadata": {
     "appmode": "static",
     "primary_rmd": null,
@@ -14,11 +14,8 @@
     ".Rbuildignore": {
       "checksum": "b448807b8fb2d44e049c8d54dc8b2074"
     },
-    ".RData": {
-      "checksum": "d5b15493b4d15449f40eb295e0e47d1d"
-    },
     "DESCRIPTION": {
-      "checksum": "2546f073973f758fc6ac6e81bbe3a94b"
+      "checksum": "a207c1441c8d4a86b371c9ca63b5482a"
     },
     "inst/CITATION": {
       "checksum": "2e5f7315243a891daf649a37aef8f896"
@@ -723,7 +720,7 @@
       "checksum": "3b0ad8b693b48aba823700658398cd6b"
     },
     "R/dataLoad.R": {
-      "checksum": "4839d91183ea25801e4ffd0c85eaf8f6"
+      "checksum": "f0201bf891e5608075e8a6267dd471e4"
     },
     "R/density.R": {
       "checksum": "39ca443f798eda18954597740422bfb1"
@@ -789,7 +786,7 @@
       "checksum": "f8697ed90437f92e3f9b10aecbad3bde"
     },
     "tests/test-deseq.R": {
-      "checksum": "199cfd9c6fff5a7e4f5d31ca0276c17e"
+      "checksum": "80af5367f65216ed52172a19d8866e79"
     },
     "tests/test-null.R": {
       "checksum": "ba63b7f8d28643aacbc76d11fc4368d0"
