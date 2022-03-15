@@ -97,7 +97,6 @@ debrowserdataload <- function(input = NULL, output = NULL, session = NULL, nextp
     })
     
     observeEvent(input$uploadFile, {
-        browser()
         if (is.null(input$countdata)) return (NULL)
         checkRes <- checkCountData(input)
         
