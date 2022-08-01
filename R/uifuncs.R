@@ -669,5 +669,8 @@ removeExtraCols <- function(dat = NULL){
                names(dat)[grep("^ID$", names(dat))],
                names(dat)[grep("^stat$", names(dat))]
     )
-    dat <- dat[, !(names(dat) %in% rcols)]
+    if (!is.null(rcols))
+        dat <- dat[, !(names(dat) %in% rcols)]
+    else
+        dat
 }

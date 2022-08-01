@@ -27,7 +27,7 @@ ui <- shinydashboard::dashboardPage(header, sidebar, body, skin = "blue")
 server <- function(input, output, session) {
     load(system.file("extdata", "demo", "demodata.Rda",
                      package = "debrowser"))
-    selected <- callModule(debrowserpcaplot, "pca", demodata)
+    selected <- callModule(debrowserpcaplot, "pca", demodata, metadatatable)
 }
 
 shinyApp(ui, server)
