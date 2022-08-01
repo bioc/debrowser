@@ -41,7 +41,7 @@ debrowserpcaplot <- function(input = NULL, output = NULL, session = NULL, pcadat
         plot_pca(pcadata, input$pcselx, input$pcsely,
             metadata = metadata, color = sc$color,
             size = 5, shape = sc$shape,
-            textonoff = sc$textonoff,
+            textonoff = "On",
             legendSelect = sc$legendSelect, input = input )
     })
     output$pcaplot <- renderUI({
@@ -92,7 +92,6 @@ pcaPlotControlsUI <- function(id  = "pca") {
          column(12, getPCselection(id, 2, "y"))),
             fluidRow(
             column(12, getHideLegendOnOff(id)),
-            column(12, getTextOnOff(id)),
             column(12, getLegendSelect(id))),
     uiOutput(ns("colorShapeSelect")))
 }
@@ -158,7 +157,7 @@ run_pca <- function(x=NULL, retx = TRUE,
 #'
 plot_pca <- function(dat = NULL, pcx = 1, pcy = 2,
     metadata = NULL, color = NULL, shape = NULL,
-    size = NULL, textonoff = "Off", legendSelect = "samples", input = NULL) {
+    size = NULL, textonoff = "On", legendSelect = "samples", input = NULL) {
     if ( is.null(dat) || is.null(ncol(dat)) || ncol(dat) < 2 || nrow(dat)<1) return(NULL)
 
     pca_data <- run_pca(dat)
@@ -178,7 +177,7 @@ plot_pca <- function(dat = NULL, pcx = 1, pcy = 2,
         plot1 <-  plot1 + geom_point(mapping=aes(shape=shape, color=shape), size=3 )
     }
     if (textonoff == "On")
-        plot1 <- plot1 + geom_text(aes(label=samples), vjust = 0, nudge_y = 1)
+        plot1 <- plot1 + geom_text(aes(label=textName), vjust = 0, nudge_y = 1)
     plot1 <- plot1 + theme(legend.title = element_blank())
     plot1 <- plot1 +  labs(x = xaxis, y = yaxis)
     if (!is.null(input$top))
@@ -226,21 +225,24 @@ prepPCADat <- function(pca_data = NULL, metadata = NULL, input = NULL, pcx = 1, 
         samples <- rownames(plot_data)
         color  <- rownames(plot_data)
         shape <- "Conds"
+        textName <- ""
+        if (!is.null(input$text_pca) && input$text_pca != "None")
+            textName <- as.character(metadata[samples, input$text_pca])
         if (!is.null(input$color_pca) && input$color_pca != "None")
             color <- as.character(metadata[samples, input$color_pca])
         if (!is.null(input$shape_pca) && input$shape_pca != "None")
             shape <- as.character(metadata[samples, input$shape_pca])
         
-        metadata <- cbind(samples, color, shape)
+        metadata <- cbind(textName, color, shape)
         plot_data <- cbind(plot_data, metadata)
-        p_data <- plot_data[,c(xaxis, yaxis, "samples", "color", "shape")]
+        p_data <- plot_data[,c(xaxis, yaxis, "textName", "color", "shape")]
     } else {
         samples <- rownames(plot_data)
         color  <- rownames(plot_data)
         shape <- "Conds"
-        p_data <- cbind( plot_data[,c(xaxis, yaxis)], samples, color, shape)
+        p_data <- cbind( plot_data[,c(xaxis, yaxis)], textName, color, shape)
     }
-    colnames(p_data) <- c("x", "y", "samples", "color", "shape")
+    colnames(p_data) <- c("x", "y", "textName", "color", "shape")
     p_data
 }
 #' getPCAexplained
@@ -306,12 +308,13 @@ getPCAexplained <- function(datasetInput = NULL,
 getShapeColor <- function(input = NULL) {
     if (is.null(input)) return (NULL)
     sc <-  c()
+    if (!is.null(input$text_pca))
+        sc$textField <- input$text_pca
     if (!is.null(input$color_pca))
         sc$color <- input$color_pca
     if (!is.null(input$shape_pca))
         sc$shape <- input$shape_pca
     
-    sc$textonoff <- input$textonoff
     sc$legendSelect <- input$legendSelect
     return(sc)
 }
@@ -371,7 +374,8 @@ getPCselection <- function(id, num = 1, xy = "x" ) {
 #'
 getColorShapeSelection <- function(metadata = NULL, input = NULL, session = NULL) {
     if (is.null(metadata) ||  is.null(session)) return (NULL)
-    list(fluidRow(column(12, selectGroupInfo(metadata, input, session$ns("color_pca"), "Color field")),
+    list(fluidRow(column(12, selectGroupInfo(metadata, input, session$ns("text_pca"), "Text field")),
+    column(12, selectGroupInfo(metadata, input, session$ns("color_pca"), "Color field")),
     column(12, selectGroupInfo(metadata, input, session$ns("shape_pca"), "Shape field"))))
 }
 
@@ -390,23 +394,6 @@ getLegendSelect <- function(id = "pca") {
     selectInput(ns("legendSelect"), label = "Select legend",
                 choices = lst.choices,
                 selected = "color")
-}
-
-#' getTextOnOff
-#'
-#' text on PCA plot on and off
-#' @param id, namespace id
-#' @note \code{getTextOnOff}
-#' @examples
-#'     x <- getTextOnOff("pca")
-#' @export
-#'
-getTextOnOff <- function(id = "pca") {
-    ns <- NS(id)
-    lst.choices <- as.list(c("On", "Off"))
-    selectInput(ns("textonoff"), label = "Text On/Off",
-                choices = lst.choices,
-                selected = "Off")
 }
 
 #' getHideLegendOnOff

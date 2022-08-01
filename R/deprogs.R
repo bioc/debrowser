@@ -26,7 +26,15 @@ debrowserdeanalysis <- function(input = NULL, output = NULL, session = NULL,
         applyFiltersNew(addDataCols(data, deres(), columns, conds), input)
     })
     observe({
-        dat <-  prepDat()[prepDat()$Legend == input$legendradio,]
+        if(!is.null(input$legendradio)){
+            if(input$legendradio == "All"){
+                dat <- prepDat()
+            } else {
+                dat <- prepDat()[prepDat()$Legend == input$legendradio,]
+            }   
+        } else {
+            dat <- NULL
+        }
         dat2 <- removeCols(c("ID", "x", "y","Legend", "Size"), dat)
         getTableDetails(output, session, "DEResults", dat2, modal=FALSE)
     })
@@ -312,7 +320,9 @@ runEdgeR<- function(data = NULL, metadata = NULL, columns = NULL, conds = NULL, 
     if(covariates != "NoCovariate"){
         des_formula <- as.formula(paste0("~ des", paste0(" + covariate", 1:length(covariates))))
         model.matrix_data <- data.frame(des = des)
-        cov_metadata <- metadata[match(columns,metadata$sample),covariates, drop = FALSE]
+        sample_column_ind <- which(apply(metadata, 2, function(x) sum(x %in% columns) == length(columns))) 
+        sample_column <- colnames(metadata)[sample_column_ind]
+        cov_metadata <- metadata[match(columns,metadata[,sample_column]),covariates, drop = FALSE]
         for(i in 1:length(covariates)){
             cur_covariate <- cov_metadata[,i]
             cur_covariate <- factor(cur_covariate)
@@ -401,7 +411,9 @@ runLimma<- function(data = NULL, metadata = NULL, columns = NULL, conds = NULL, 
     
     if(covariates != "NoCovariate"){
         design <- cbind(Grp1=1,Grp2vs1=des)
-        cov_metadata <- metadata[match(columns,metadata$sample),covariates, drop = FALSE]
+        sample_column_ind <- which(apply(metadata, 2, function(x) sum(x %in% columns) == length(columns))) 
+        sample_column <- colnames(metadata)[sample_column_ind]
+        cov_metadata <- metadata[match(columns,metadata[,sample_column]),covariates, drop = FALSE]
         for(i in 1:length(covariates)){
             cur_covariate <- cov_metadata[,i]
             cur_covariate <- factor(cur_covariate)
@@ -450,7 +462,9 @@ prepGroup <- function(conds = NULL, cols = NULL, metadata = NULL, covariates = N
     colnames_coldata <- c("libname", "group")
     if(!is.null(covariates)){
         if(covariates!="NoCovariate"){
-            covariates <- metadata[match(cols,metadata$sample),covariates, drop = FALSE]
+            sample_column_ind <- which(apply(metadata, 2, function(x) sum(x %in% cols) == length(cols))) 
+            sample_column <- colnames(metadata)[sample_column_ind]
+            covariates <- metadata[match(cols,metadata[,sample_column]), covariates, drop = FALSE]
             for(i in 1:ncol(covariates)){
                 cur_covariate <- covariates[,i]
                 cur_covariate <- factor(cur_covariate)
@@ -540,7 +554,7 @@ getMean<-function(data = NULL, selcols=NULL) {
 #'
 getLegendRadio <- function(id) {
     ns <- NS(id)
-    types <- c("Up", "Down", "NS")
+    types <- c("Up", "Down", "NS", "All")
     radioButtons(inputId=ns("legendradio"), 
                  label="Data Type:",
                  choices=types

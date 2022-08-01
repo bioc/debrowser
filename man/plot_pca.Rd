@@ -12,7 +12,7 @@ plot_pca(
   color = NULL,
   shape = NULL,
   size = NULL,
-  textonoff = "Off",
+  textonoff = "On",
   legendSelect = "samples",
   input = NULL
 )
