@@ -3,6 +3,8 @@ library(DESeq2)
 library(heatmaply)
 library(RColorBrewer)
 library(gplots)
+source("../../R/heatmap.R")
+source("../../R/plotSize.R")
 
 options(warn=-1)
 header <- dashboardHeader(

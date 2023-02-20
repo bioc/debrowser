@@ -258,12 +258,12 @@ runHeatmap2 <- function(input = NULL, session = NULL, expdata = NULL){
         m <- heatmap.2(as.matrix(expdata), Rowv = FALSE, main = input$main, dendrogram = input$dendrogram,
                        Colv = FALSE, col = heatmapColors, labRow = input$labRow,
                        distfun = distfun_row, hclustfun = hclustfun_row, density.info = "none",
-                       trace = "none", margins = c(10,10))
+                       trace = "none", margins = c(input$bottom/10, input$right/10))
     }else{
         m <- heatmap.2(as.matrix(expdata), main = input$main, dendrogram = input$dendrogram,
                        col = heatmapColors, labRow = input$labRow,
                        distfun = distfun_row, hclustfun = hclustfun_row, density.info = "none",
-                       trace = "none", margins = c(10,10))
+                       trace = "none", margins = c(input$bottom/10, input$right/10))
     }
     m
 }

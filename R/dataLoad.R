@@ -319,7 +319,7 @@ checkMetaData <- function(input = NULL, counttable = NULL){
         count <- as.vector(colnames(counttable)[order(as.vector(colnames(counttable)))])
         difference <- base::setdiff(met, count)
         if (length(difference)>0){
-            return(paste0("Colnames doesn't match with the metada table(", paste0(difference,sep=","), ")"))
+            return(paste0("Colnames doesn't match with the metada table(", paste0(difference,sep=",", collapse=" "), ")"))
         }
         return("success")
     }, error = function(err) {

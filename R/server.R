@@ -433,7 +433,7 @@ deServer <- function(input, output, session) {
             if (!is.null(inputGOstart()$p) && input$startGO){
                 if (input$goplot == "GSEA" && !is.null(input$gotable_rows_selected)){
                     pid <- input$gotable_rows_selected
-                    p <- gseaplot(inputGOstart()$enrich_p, by = "all", 
+                    p <- enrichplot::gseaplot(inputGOstart()$enrich_p, by = "all", 
                     title = inputGOstart()$enrich_p$Description[pid[1]], 
                     geneSetID = pid[1])
                     return(p)
@@ -470,6 +470,7 @@ deServer <- function(input, output, session) {
             } else{
                 genes <- inputGOstart()$enrich_p$geneID[i]
             }
+            
             genedata <- getEntrezTable(genes,
                 dat[[1]], org)
             dat[[1]] <- genedata
@@ -481,8 +482,16 @@ deServer <- function(input, output, session) {
                 to see the gene list"))
             dat <- getGOCatGenes()
             if (!is.null(dat)){
-                DT::datatable(dat[[1]],
-                    list(lengthMenu = list(c(10, 25, 50, 100),
+                DT::datatable(dat[[1]], extensions = 'Buttons',
+                      options = list( server = TRUE,
+                                      dom = "Blfrtip",
+                                      buttons = 
+                                          list("copy", list(
+                                              extend = "collection"
+                                              , buttons = c("csv", "excel", "pdf")
+                                              , text = "Download"
+                                          ) ), # end of buttons customization
+                        lengthMenu = list(c(10, 25, 50, 100),
                         c("10", "25", "50", "100")),
                         pageLength = 25, paging = TRUE, searching = TRUE)) %>%
                     getTableStyle(input, dat[[2]], dat[[3]], buttonValues$startDE)
@@ -546,7 +555,16 @@ deServer <- function(input, output, session) {
                 dat[[3]]= ""
             
             datDT <- DT::datatable(dat[[1]][, input$table_col_list],
-                options = list(lengthMenu = list(c(10, 25, 50, 100),
+                extensions = 'Buttons',
+                options = list( server = TRUE,
+                                    dom = "Blfrtip",
+                                    buttons = 
+                                        list("copy", list(
+                                            extend = "collection"
+                                            , buttons = c("csv", "excel", "pdf")
+                                            , text = "Download"
+                                        ) ), # end of buttons customization
+                    lengthMenu = list(c(10, 25, 50, 100),
                 c("10", "25", "50", "100")),
                 pageLength = 25, paging = TRUE, searching = TRUE)) %>%
                 getTableStyle(input, dat[[2]], dat[[3]], buttonValues$startDE)
@@ -560,8 +578,17 @@ deServer <- function(input, output, session) {
         })
         output$gotable <- DT::renderDataTable({
             if (!is.null(inputGOstart()$table)){
-                DT::datatable(inputGOstart()$table,
-                    list(lengthMenu = list(c(10, 25, 50, 100),
+                DT::datatable(inputGOstart()$table, rownames = FALSE,
+                              extensions = 'Buttons',
+                              options = list( server = TRUE,
+                                              dom = "Blfrtip",
+                                              buttons = 
+                                                  list("copy", list(
+                                                      extend = "collection"
+                                                      , buttons = c("csv", "excel", "pdf")
+                                                      , text = "Download"
+                                                  ) ), # end of buttons customization
+                    lengthMenu = list(c(10, 25, 50, 100),
                     c("10", "25", "50", "100")),
                     pageLength = 25, paging = TRUE, searching = TRUE))
             }

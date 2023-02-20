@@ -205,7 +205,7 @@ getGSEA <- function(dataset=NULL, pvalueCutoff = 0.01,
     res$table <- NULL
     if (nrow(res$enrich_p@result)>0 )
         res$table <- res$enrich_p@result[,c("ID", "Description", 
-           "setSize", "enrichmentScore", "pvalue", "p.adjust", "qvalues")]
+           "setSize", "enrichmentScore", "pvalue", "p.adjust", "qvalue")]
 
     return(res)
 }
