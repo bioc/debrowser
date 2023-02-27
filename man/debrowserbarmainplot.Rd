@@ -11,6 +11,7 @@ debrowserbarmainplot(
   data = NULL,
   cols = NULL,
   conds = NULL,
+  cond_names = NULL,
   key = NULL
 )
 }
@@ -26,6 +27,8 @@ debrowserbarmainplot(
 \item{cols, }{columns}
 
 \item{conds, }{conditions}
+
+\item{cond_names, }{condition names}
 
 \item{key, }{the gene or region name}
 }

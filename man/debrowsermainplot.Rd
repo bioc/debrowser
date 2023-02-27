@@ -4,7 +4,13 @@
 \alias{debrowsermainplot}
 \title{debrowsermainplot}
 \usage{
-debrowsermainplot(input = NULL, output = NULL, session = NULL, data = NULL)
+debrowsermainplot(
+  input = NULL,
+  output = NULL,
+  session = NULL,
+  data = NULL,
+  cond_names = NULL
+)
 }
 \arguments{
 \item{input, }{input variables}
@@ -14,6 +20,8 @@ debrowsermainplot(input = NULL, output = NULL, session = NULL, data = NULL)
 \item{session, }{session}
 
 \item{data, }{a matrix that includes expression values}
+
+\item{cond_names, }{condition names}
 }
 \value{
 main plot

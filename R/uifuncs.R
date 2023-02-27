@@ -371,6 +371,8 @@ getCondMsg <- function(dc = NULL, input = NULL, cols = NULL, conds = NULL) {
     num <- input$compselect
     if (is.null(num)) num <- 1
     cnd <- data.frame(cbind(conds, cols))
+    cond_names <- dc[[as.numeric(num)]]$cond_names
+    
     params_str <- paste(dc[[as.numeric(num)]]$demethod_params, collapse = ',')
     heatmap_str <-  paste0( "<b>Heatmap Params: Scaled:</b> ", input[['heatmap-scale']],
         " <b>Centered:</b> ", input[['heatmap-center']],
@@ -385,10 +387,10 @@ getCondMsg <- function(dc = NULL, input = NULL, cols = NULL, conds = NULL) {
             HTML( paste0( "<b>DE Params:</b> ", params_str,
             " - <b>Dataset:</b> ", input$dataset," <b>Normalization:</b> ",input$norm_method,
             " - ", heatmap_str,
-            "</br><b>",unique(conds)[1], ":</b> "),
-            paste(cnd[cnd$conds == unique(conds)[1], "cols"],
+            "</br><b>", cond_names[1], ":</b> "),
+            paste(cnd[cnd$conds ==  unique(conds)[1], "cols"],
             collapse =","),
-            paste0(" vs. ","<b>",unique(conds)[2], ":", "</b> "),
+            paste0(" vs. ","<b>", cond_names[2], ":", "</b> "),
             paste(cnd[cnd$conds == unique(conds)[2], "cols"],
             collapse =",")),
         getHelpButton("method",

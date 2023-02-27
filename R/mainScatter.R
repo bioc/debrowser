@@ -7,6 +7,7 @@
 #' @param output, output objects
 #' @param session, session 
 #' @param data, a matrix that includes expression values
+#' @param cond_names, condition names
 #' @return main plot
 #'
 #' @return panel
@@ -15,7 +16,7 @@
 #' @examples
 #'     x <- debrowsermainplot()
 #'
-debrowsermainplot <- function(input = NULL, output = NULL, session = NULL, data = NULL) {
+debrowsermainplot <- function(input = NULL, output = NULL, session = NULL, data = NULL, cond_names = NULL) {
     if (is.null(data)) return(NULL)
     
     plotdata <-  reactive({
@@ -31,10 +32,12 @@ debrowsermainplot <- function(input = NULL, output = NULL, session = NULL, data 
                 height=input$plotheight, width=input$plotwidth)
             ))))
     })
-    output$mainPlotControlsUI <- renderUI({
+    
+    xylabels <- reactive({
         if (input$mainplot == "scatter"){
-            x <- paste0('log10 Norm. Mean(Read Counts) in cond1')
-            y <- paste0('log10 Norm. Mean(Read Counts) in cond2')
+            x <- paste0('log10 Norm. Mean(Read Counts) in ', cond_names[1])
+            y <- paste0('log10 Norm. Mean(Read Counts) in ', cond_names[2])
+            
         }else if  (input$mainplot == "volcano"){
             x <- "log2FC"
             y <- "-log10padj"
@@ -42,6 +45,13 @@ debrowsermainplot <- function(input = NULL, output = NULL, session = NULL, data 
             x <- "A"
             y <- "M"
         }
+        dat <- c(x,y)
+    })
+
+    output$mainPlotControlsUI <- renderUI({
+        labs <- xylabels()
+        x <- labs[1]
+        y <- labs[2]
         list(
             textInput(session$ns('xlab'),'x label', x),
             textInput(session$ns('ylab'),'y label', y),
@@ -49,6 +59,17 @@ debrowsermainplot <- function(input = NULL, output = NULL, session = NULL, data 
             conditionalPanel(paste0("input['",session$ns("labelsearched"), "']"),
             colourpicker::colourInput(session$ns("labelcolor"), "Label colour", "black"),
             selectInput(session$ns("labelsize"), "Label Size", choices=c(6:30), selected=14))
+        )
+    })
+    
+    output$volcanoControlsUI <- renderUI({
+        if(input$mainplot != 'volcano') return(NULL)
+        list(
+         checkboxInput(session$ns("limitPadj"), "Limit -log10 padj", FALSE),
+         conditionalPanel(condition <- paste0("input['", session$ns("limitPadj"),"']"),
+                          sliderInput(session$ns("log10padjCutoff"), "Log10 padj value cutoff:",
+                                      min=2, max=100, value=60, sep = "",
+                                      animate = FALSE))
         )
     })
     selectedPoint <- reactive({
@@ -73,7 +94,7 @@ debrowsermainplot <- function(input = NULL, output = NULL, session = NULL, data 
     
     output$main <- renderPlotly({
         data <- plotdata()$data
-        mainScatterNew(input, data, session$ns("source"))
+        mainScatterNew(input, data, cond_names, session$ns("source"))
     })
     
     list( shg = (selectedPoint), shgClicked=(selectedPoint), selGenes=(getSelected))
@@ -102,6 +123,7 @@ getMainPlotUI <- function(id) {
 #' panel.
 #' @param input, input params
 #' @param data, dataframe that has log2FoldChange and log10padj values
+#' @param cond_names condition names
 #' @param source, for event triggering to select genes
 #' @return scatter, volcano or MA plot
 #'
@@ -111,9 +133,9 @@ getMainPlotUI <- function(id) {
 #'
 #' @export
 #'
-mainScatterNew <- function(input = NULL, data = NULL, source = NULL) {
+mainScatterNew <- function(input = NULL, data = NULL, cond_names=NULL, source = NULL) {
     if ( is.null(data) ) return(NULL)
-    
+
     p <- plot_ly(source = source, data=data, x=~x, y=~y, key=~key, alpha = 0.8,
                  color=~Legend, colors=getLegendColors(getLevelOrder(unique(data$Legend))), 
                  type="scatter", mode = "markers",
@@ -160,7 +182,6 @@ mainScatterNew <- function(input = NULL, data = NULL, source = NULL) {
     if (!is.null(input$svg) && input$svg == TRUE)
         p <- p %>% config(toImageButtonOptions = list(format = "svg"))
     p$elementId <- NULL
-    
     return(p)
 }
 
@@ -203,7 +224,12 @@ plotData <- function(pdata = NULL, input = NULL){
                                           & !is.na(plot_init_data$log10padj)
                                           & !is.na(plot_init_data$Legend)),]
         plot_data$x <- plot_data$log2FoldChange
-        plot_data$log10padj[plot_data$log10padj>input$log10padjCutoff] <- input$log10padjCutoff
+        plot_data$log10padjOrg <- plot_data$log10padj
+        if (!is.null(input$limitPadj) && input$limitPadj){
+            plot_data$log10padj[plot_data$log10padj>input$log10padjCutoff] <- input$log10padjCutoff
+        }else{
+            plot_data$log10padj <- plot_data$log10padjOrg
+        }
         plot_data$y <- plot_data$log10padj
     } else if (mainplot == "maplot") {
         plot_data$x <- (plot_init_data$x + plot_init_data$y) / 2
@@ -234,13 +260,8 @@ mainPlotControlsUI <- function(id) {
     shinydashboard::menuItem("Main Options",
         startExpanded=TRUE,
         sliderInput(ns("backperc"), "Background Data(%):",
-        min=10, max=100, value=10, sep = "",
-        animate = FALSE),
-        conditionalPanel(condition <- paste0("input['", ns("mainplot"),"'] == 'volcano'"),
-        sliderInput(ns("log10padjCutoff"), "Log10 padj value cutoff:",
-        min=2, max=100, value=60, sep = "",
-        animate = FALSE)
-        ),
+        min=10, max=100, value=10, sep = "", animate = FALSE),
+        uiOutput(ns("volcanoControlsUI")),
         uiOutput(ns("mainPlotControlsUI"))
     ))
     
@@ -320,10 +341,10 @@ generateTestData <- function(dat = NULL) {
     data <- dat$data
     params <-
         #Run DESeq2 with the following parameters
-        c("DESeq2", "parametric", F, "Wald", "None")
+        c("DESeq2","NoCovariate", "parametric", F, "Wald", "None")
     non_expressed_cutoff <- 10
     data <- subset(data, rowSums(data) > 10)
-    deseqrun <- runDE(data, columns, conds, params)
+    deseqrun <- runDE(data, metadata, columns, conds, params)
     
     met <- as.data.frame(cbind(as.vector(conds), columns))
     colnames(met) <- c("conds", "columns")

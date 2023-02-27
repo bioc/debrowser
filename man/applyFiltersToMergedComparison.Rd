@@ -4,14 +4,14 @@
 \alias{applyFiltersToMergedComparison}
 \title{applyFiltersToMergedComparison}
 \usage{
-applyFiltersToMergedComparison(merged = NULL, nc = NULL, input = NULL)
+applyFiltersToMergedComparison(dc = NULL, nc = NULL, input = NULL)
 }
 \arguments{
-\item{merged, }{merged data}
-
 \item{nc, }{the number of comparisons}
 
 \item{input, }{input params}
+
+\item{merged, }{merged data}
 }
 \value{
 data

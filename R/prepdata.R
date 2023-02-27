@@ -1,54 +1,3 @@
-#' getSamples
-#'
-#' Gathers the sample names to be used within DEBrowser.
-#'
-#' @param cnames, names of the  samples
-#' @param index, starting column in a tab separated file
-#' @return choices
-#' @export
-#'
-#' @examples
-#'     x <- getSamples()
-#'
-getSamples <- function (cnames = NULL, index = 1) { 
-    m <- NULL
-    if (!is.null(cnames)) {
-        cn <- cnames[index:length(cnames)]
-        m <- as.list(NULL)
-        for (i in seq(cn)) {
-            m[i] <- cn[i]
-        }
-    }
-    m
-}
-
-#' prepDEOutput
-#'
-#' Prepares the output data from DE analysis to be used within
-#' DEBrowser
-#'
-#' @param data, loaded dataset
-#' @param cols, columns
-#' @param conds, conds
-#' @param inputconds, inputconds
-#' @param i, selected comparison number
-#' @param input, input
-#' @return data
-#' @export
-#'
-#' @examples
-#'     x <- prepDEOutput()
-#'
-prepDEOutput <- function(data = NULL, cols = NULL, 
-    conds = NULL, inputconds=NULL, i=NULL, input = NULL) {
-    if (is.null(data)) return (NULL)
-    if (length(cols) != length(conds)) return(NULL)
-    params <- inputconds$demethod_params[i]
-    de_res <- runDE(data, cols, conds, params)
-    de_res <- data.frame(de_res)
-}
-
-
 #' applyFilters
 #'
 #' Applies filters based on user selected parameters to be
@@ -385,7 +334,9 @@ getMergedComparison <- function(dc = NULL, nc = NULL, input = NULL){
         tmp <- dc[[ni]]$init_data[,c("foldChange", "padj")]
 
         samples <- dc[[ni]]$cols
-        tt <- paste0("C", (2*ni-1),".vs.C",(2*ni))
+        cond_names <- dc[[ni]]$cond_names
+        tt <- paste0(cond_names[1],".vs.",cond_names[2])
+        #tt <- paste0("C", (2*ni-1),".vs.C",(2*ni))
         fctt <- paste0("foldChange.", tt)
         patt <-  paste0("padj.", tt)
         colnames(tmp) <- c(fctt,  patt)
@@ -425,10 +376,11 @@ getMergedComparison <- function(dc = NULL, nc = NULL, input = NULL){
 #' @examples
 #'     x <- applyFiltersToMergedComparison()
 #'
-applyFiltersToMergedComparison <- function (merged = NULL, 
+applyFiltersToMergedComparison <- function (dc = NULL, 
     nc = NULL, input = NULL)
 {
-    if (is.null(merged)) return (NULL)
+    if (is.null(dc)) return (NULL)
+    merged <- getMergedComparison(dc, nc, input)
     padj_cutoff <- as.numeric(input$padj)
     foldChange_cutoff <- as.numeric(input$foldChange)
     if (is.null(merged$Legend)){
@@ -436,7 +388,9 @@ applyFiltersToMergedComparison <- function (merged = NULL,
         merged$Legend <- "NS"
     }
     for ( ni in seq(1:nc)) {
-        tt <- paste0("C", (2*ni-1),".vs.C",(2*ni))
+        cond_names <- dc[[ni]]$cond_names
+        tt <- paste0(cond_names[1],".vs.",cond_names[2])
+        #tt <- paste0("C", (2*ni-1),".vs.C",(2*ni))
         merged[which(as.numeric(merged[,c(paste0("foldChange.", tt))]) >= 
             foldChange_cutoff & as.numeric(merged[,c(paste0("padj.", tt))]) <= 
             padj_cutoff), "Legend"] <- "Sig"
@@ -444,7 +398,6 @@ applyFiltersToMergedComparison <- function (merged = NULL,
             1/foldChange_cutoff & as.numeric(merged[,c(paste0("padj.", tt))]) <= 
             padj_cutoff), "Legend"] <- "Sig"
     }
-    print(head(merged))
     merged 
 }
 

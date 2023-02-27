@@ -41,6 +41,8 @@ server <- function(input, output, session) {
                        "Treat", "Treat", "Treat") )
     dat$data <- data.frame(demodata[, dat$columns])
     
+    dat$cond_names <- c("Control", "Treat")
+    
     # You can also use your dataset by reading your data from a file like below;
     # The data in this commented out exampele is not supplied but these lines 
     # can give you an idea about how to read the data from a file;
@@ -53,7 +55,7 @@ server <- function(input, output, session) {
     # dat$data <- data.frame(data[, dat$columns])
     #
     xdata <- generateTestData(dat)
-    selected <- callModule(debrowsermainplot, "main", xdata)
+    selected <- callModule(debrowsermainplot, "main", xdata, dat$cond_names)
     
     output$main_hover <- renderPrint({
         selected$shgClicked()

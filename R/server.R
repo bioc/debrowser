@@ -269,6 +269,8 @@ deServer <- function(input, output, session) {
         })
         conds <- reactive({ comparison()$conds })
         cols <- reactive({ comparison()$cols })
+        cond_names <- reactive({ comparison()$cond_names })
+        
         init_data <- reactive({ 
             if (buttonValues$startDE && !is.null(comparison()$init_data))
                 comparison()$init_data 
@@ -317,7 +319,7 @@ deServer <- function(input, output, session) {
             if (!is.null(filt_data())) {
             condmsg(getCondMsg(dc(), input,
                 cols(), conds()))
-            selectedMain(callModule(debrowsermainplot, "main", filt_data()))
+            selectedMain(callModule(debrowsermainplot, "main", filt_data(), cond_names()))
             }
         })
         selectedHeat <- reactiveVal()
@@ -351,9 +353,9 @@ deServer <- function(input, output, session) {
             if (!is.null(selgenename()) && selgenename()!=""){
                 withProgress(message = 'Creating Bar/Box plots', style = "notification", value = 0.1, {
                     callModule(debrowserbarmainplot, "barmain", filt_data(), 
-                               cols(), conds(), selgenename())
+                               cols(), conds(), cond_names(), selgenename())
                     callModule(debrowserboxmainplot, "boxmain", filt_data(), 
-                               cols(), conds(), selgenename())
+                               cols(), conds(), cond_names(), selgenename())
                 })
             }
         })
@@ -549,10 +551,10 @@ deServer <- function(input, output, session) {
                 return (NULL)
             if (!all(input$table_col_list %in% colnames(dat[[1]]), na.rm = FALSE)) 
                 return(NULL)
-            if (!dat[[2]] %in% input$table_col_list)
-                dat[[2]]= ""
-            if (!dat[[3]] %in% input$table_col_list)
-                dat[[3]]= ""
+            #if (!dat[[2]] %in% input$table_col_list)
+            #    dat[[2]] <- ""
+            #if (!dat[[3]] %in% input$table_col_list)
+            #    dat[[3]] <- ""
             
             datDT <- DT::datatable(dat[[1]][, input$table_col_list],
                 extensions = 'Buttons',
@@ -594,9 +596,7 @@ deServer <- function(input, output, session) {
             }
         })
         mergedComp <- reactive({
-            dat <- applyFiltersToMergedComparison(
-                getMergedComparison(isolate(dc()), choicecounter$nc, input), 
-                choicecounter$nc, input)
+            dat <- applyFiltersToMergedComparison(isolate(dc()), choicecounter$nc, input)
             dat[dat$Legend == "Sig", ]
         })
         

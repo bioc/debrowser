@@ -334,7 +334,7 @@ getCompSelection <- function(name = NULL, count = NULL) {
     if (count>1){
         a <- list(selectInput(name,
             label = "Choose a comparison:",
-            choices = c(1:count) ))
+            choices = c(1:count)))
     }
     a
 }

@@ -1,5 +1,6 @@
 library(debrowser)
 library(plotly)
+source("../../R/boxmain.R")
 
 options(warn =-1)
 
@@ -26,11 +27,13 @@ ui <- dashboardPage(header, sidebar, body, skin = "blue")
 server <- function(input, output, session) {
     load(system.file("extdata", "demo", "demodata.Rda",
                      package = "debrowser"))
+    cond_names <- c("Control", "Treat")
+    
     observe({
         if (!is.null(input$genename))
             callModule(debrowserboxmainplot, "boxmain", demodata, 
             metadatatable$sample,  
-            metadatatable$treatment, input$genename)
+            metadatatable$treatment, cond_names, input$genename)
 })
 }
 

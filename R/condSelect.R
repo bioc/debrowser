@@ -629,7 +629,16 @@ prepDataContainer <- function(data = NULL, counter=NULL,
             initd <- callModule(debrowserdeanalysis, paste0("DEResults",i), data = data, metadata = meta, 
                   columns = cols, conds = conds, params = params)
             if (!is.null(initd$dat()) && nrow(initd$dat()) > 1){
-                inputconds$dclist[[i]] <- list(conds = conds, cols = cols, init_data=initd$dat(), 
+                meta_selection <- selectedInput("conditions_from_meta", i, NULL, input)
+                cond_names <- c(paste0("Cond", 2*i-1), paste0("Cond", 2*i))
+                if (meta_selection != "No Selection"){
+                    rownames(meta) <- meta[,1]
+                    ctable <- data.frame(cbind(meta[cols,c(colnames(meta[1]), meta_selection)], conds))
+                    colnames(ctable) <- c("sample", "cond_name", "conds")
+                    cond_names <- c(unique(ctable$cond_name[ctable$conds == paste0("Cond", 2*i-1)]),
+                                    unique(ctable$cond_name[ctable$conds == paste0("Cond", 2*i)]))
+                }
+                inputconds$dclist[[i]] <- list(conds = conds, cols = cols, cond_names=cond_names, init_data=initd$dat(), 
                     demethod_params = inputconds$demethod_params[i])
             }else{
                 return(NULL)

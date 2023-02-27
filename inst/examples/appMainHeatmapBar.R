@@ -4,6 +4,8 @@ library(heatmaply)
 library(gplots)
 library(DESeq2)
 source("../../R/mainScatter.R")
+source("../../R/boxmain.R")
+source("../../R/barmain.R")
 
 header <- dashboardHeader(
     title = "DEBrowser Main Plots"
@@ -18,8 +20,8 @@ sidebar <- dashboardSidebar(  sidebarMenu(id="DEAnalysis",
     "&nbsp;&nbsp;Ex: ^Al => Al.., Al$ => ...al")),
     heatmapControlsUI("heatmap"),
     plotSizeMarginsUI("heatmap", w=600, h=360),
-    plotSizeMarginsUI("barmain", w=600,h=400),
-    plotSizeMarginsUI("boxmain", w=600, h=400)))
+    plotSizeMarginsUI("barmain", w=600,h=400, t=60),
+    plotSizeMarginsUI("boxmain", w=600, h=400, t=60)))
 
 body <- dashboardBody(
     tabItems(
@@ -50,6 +52,9 @@ server <- function(input, output, session) {
                        "Treat", "Treat", "Treat") )
     dat$data <- data.frame(demodata[, dat$columns])
     
+    dat$cond_names <- data.frame(cbind(dat$columns, as.character(dat$conds), metadatatable$treatment))
+    colnames(dat$cond_names) <- c("sample", "cond_name", "conds")
+    
     # You can also use your dataset by reading your data from a file like below;
     # The data in this commented out exampele is not supplied but these lines 
     # can give you an idea about how to read the data from a file;
@@ -68,7 +73,7 @@ server <- function(input, output, session) {
         if(input$genesetarea != ""){
             xdata[rownames(getSearchData(xdata, input)), "Legend"] <- "GS"
         }
-        selected(callModule(debrowsermainplot, "main", xdata))
+        selected(callModule(debrowsermainplot, "main", xdata, dat$cond_names))
     })
     selectedHeat <- reactiveVal()
     observe({
@@ -93,10 +98,10 @@ server <- function(input, output, session) {
             withProgress(message = 'Creating Bar/Box plots', style = "notification", value = 0.1, {
             callModule(debrowserbarmainplot, "barmain", xdata, 
                        dat$columns,
-                       dat$conds, getGeneName())
+                       dat$conds, dat$cond_names, getGeneName())
             callModule(debrowserboxmainplot, "boxmain", xdata, 
                        dat$columns,
-                       dat$conds, getGeneName())
+                       dat$conds, dat$cond_names, getGeneName())
             })
         }
     })

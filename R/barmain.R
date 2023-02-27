@@ -9,6 +9,7 @@
 #' @param data, a matrix that includes expression values
 #' @param cols, columns
 #' @param conds, conditions
+#' @param cond_names, condition names
 #' @param key, the gene or region name
 #' @return density plot 
 #' @export
@@ -17,7 +18,7 @@
 #'     x <- debrowserbarmainplot()
 #'
 debrowserbarmainplot <- function(input, output, session, data = NULL,
-                                 cols = NULL, conds=NULL, key=NULL) {
+                                 cols = NULL, conds=NULL, cond_names=NULL, key=NULL) {
     if(is.null(data)) return(NULL)
     output$BarMainUI <- renderUI({
         shinydashboard::box(
@@ -27,7 +28,7 @@ debrowserbarmainplot <- function(input, output, session, data = NULL,
                 height=input$height, width=input$width))
     })
     output$BarMain <- renderPlotly({
-        getBarMainPlot(data, cols, conds, key, title = "", input =input)
+        getBarMainPlot(data, cols, conds, cond_names, key, title = "", input =input)
     })
 }
 
@@ -75,6 +76,7 @@ barMainPlotControlsUI <- function(id) {
 #' @param data, count or normalized data
 #' @param cols, cols
 #' @param conds, conds
+#' @param cond_names, condition names
 #' @param key, key
 #' @param title, title
 #' @param input, input
@@ -83,26 +85,31 @@ barMainPlotControlsUI <- function(id) {
 #' @examples
 #'     getBarMainPlot()
 #'
-getBarMainPlot <- function(data=NULL, cols = NULL, conds=NULL, key=NULL, title = "", input = NULL){
+getBarMainPlot <- function(data=NULL, cols = NULL, conds=NULL, cond_names=NULL, key=NULL, title = "", input = NULL){
     if (is.null(data)) return(NULL)
+    
+    cn <- unique(conds)
+    conds[conds==cn[1]] <- cond_names[1]
+    conds[conds==cn[2]] <- cond_names[2]
     vardata <- getVariationData(data, cols, conds, key)
+ 
     title <- paste(key, "variation")
     
     p <- plot_ly(vardata, x = ~libs, y = ~count, 
-                 color=~conds, colors=c("Blue", "Red"),
-                 type = "bar")
+                 color=~conds, colors=c("Red", "Blue"),
+                 type = "bar", height=input$height, width=input$width)
     p <- p %>% 
         plotly::layout(title = title,
             xaxis = list(categoryorder = "array",
-                        categoryarray = "conds",
-                        title = "Conditions"),
+                        categoryarray = cols,
+                        title = "Conditions"
+                        ),
             yaxis = list(title = "Read Count"),
-            height=input$height, width=input$width,
             margin = list(l = input$left,
                           b = input$bottom,
                           t = input$top,
                           r = input$right
-            ))
+            )) 
     if (!is.null(input$svg) && input$svg == TRUE)
       p <- p %>% config(toImageButtonOptions = list(format = "svg"))
     p$elementId <- NULL

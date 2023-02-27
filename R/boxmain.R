@@ -27,6 +27,7 @@ getBoxMainPlotUI <- function(id) {
 #' @param data, a matrix that includes expression values
 #' @param cols, columns
 #' @param conds, conditions
+#' @param cond_names, condition names
 #' @param key, the gene or region name
 #' @return density plot 
 #' @export
@@ -35,10 +36,10 @@ getBoxMainPlotUI <- function(id) {
 #'     x <- debrowserboxmainplot()
 #'
 debrowserboxmainplot <- function(input = NULL, output = NULL, session = NULL, data = NULL,
-                                 cols = NULL, conds = NULL, key=NULL) {
+                                 cols = NULL, conds = NULL, cond_names = NULL, key=NULL) {
     if(is.null(data)) return(NULL)
     output$BoxMain <- renderPlotly({
-        getBoxMainPlot(data, cols, conds, key, title="", input)
+        getBoxMainPlot(data, cols, conds, cond_names, key, title="", input)
     })
     
     output$BoxMainUI <- renderUI({
@@ -75,6 +76,7 @@ BoxMainPlotControlsUI <- function(id) {
 #' @param data, count or normalized data
 #' @param cols, cols
 #' @param conds, conds
+#' @param cond_names, condition names
 #' @param key, key
 #' @param title, title
 #' @param input, input
@@ -83,17 +85,23 @@ BoxMainPlotControlsUI <- function(id) {
 #' @examples
 #'     getBoxMainPlot()
 #'
-getBoxMainPlot <- function(data=NULL, cols = NULL, conds=NULL, key=NULL, title = "", input = NULL){
-  if (is.null(data)) return(NULL)
+getBoxMainPlot <- function(data=NULL, cols = NULL, conds=NULL, cond_names=NULL, key=NULL, title = "", input = NULL){
+  if (is.null(data)) return(NULL) 
+
+  cn <- unique(conds)
+  conds[conds==cn[1]] <- cond_names[1]
+  conds[conds==cn[2]] <- cond_names[2]
   vardata <- getVariationData(data, cols, conds, key)
+
   title <- paste(key, "variation")
   p <- plot_ly(vardata, x = ~conds, y = ~count, 
-               color=~conds, colors=c("Blue", "Red"),
-               boxpoints = "all", type = "box") %>%
+               color=~conds, colors=c("Red", "Blue"),
+               boxpoints = "all", type = "box", height=input$height, width=input$width) %>%
        plotly::layout(title = title,
-                   xaxis = list(title = "Conditions"),
+                  xaxis = list(categoryorder = "array",
+                               categoryarray = cols,
+                               title = "Conditions"),
                    yaxis = list(title = "Read Count"),
-                   height=input$height, width=input$width,
                    margin = list(l = input$left,
                                  b = input$bottom,
                                  t = input$top,

@@ -1,6 +1,8 @@
 library(plotly)
 library(debrowser)
 library(DESeq2)
+source("../../R/mainScatter.R")
+source("../../R/deprogs.R")
 
 header <- dashboardHeader(
     title = "DEBrowser Main Plots"
@@ -27,10 +29,14 @@ server <- function(input, output, session) {
     load(system.file("extdata", "demo", "demodata.Rda",
                      package = "debrowser"))
     dat <-c()
-    dat$columns <- c("exper_rep1", "exper_rep2", "exper_rep3",
-                 "control_rep1", "control_rep2", "control_rep3")
+    dat$columns <- c( "control_rep1", "control_rep2", "control_rep3",
+                      "exper_rep1", "exper_rep2", "exper_rep3")
     dat$conds <- factor( c("Control", "Control", "Control",
                        "Treat", "Treat", "Treat") )
+    
+    cond_names <- c("Control", "Treat")
+    
+    
     dat$data <- data.frame(demodata[, dat$columns])
     
     # You can also use your dataset by reading your data from a file like below;
@@ -45,7 +51,7 @@ server <- function(input, output, session) {
     # dat$data <- data.frame(data[, dat$columns])
     #
     xdata <- generateTestData(dat)
-    selected <- callModule(debrowsermainplot, "main", xdata)
+    selected <- callModule(debrowsermainplot, "main", xdata, cond_names)
     
     output$main_hover <- renderPrint({
         selected$shgClicked()

@@ -141,7 +141,7 @@ applyFiltersNew <- function(data = NULL, input = NULL) {
 runDE <- function(data = NULL, metadata = NULL, columns = NULL, conds = NULL, params = NULL) {
     if (is.null(data)) return(NULL)
     de_res <- NULL
-    if (startsWith(params[1], "DESeq2"))    
+    if (startsWith(params[1], "DESeq2"))
         de_res <- runDESeq2(data, metadata, columns, conds, params)
     else if (startsWith(params[1], "EdgeR"))    
         de_res <- runEdgeR(data, metadata, columns, conds, params)

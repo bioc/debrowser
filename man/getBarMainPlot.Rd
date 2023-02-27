@@ -8,6 +8,7 @@ getBarMainPlot(
   data = NULL,
   cols = NULL,
   conds = NULL,
+  cond_names = NULL,
   key = NULL,
   title = "",
   input = NULL
@@ -19,6 +20,8 @@ getBarMainPlot(
 \item{cols, }{cols}
 
 \item{conds, }{conds}
+
+\item{cond_names, }{condition names}
 
 \item{key, }{key}
 

@@ -4,12 +4,14 @@
 \alias{mainScatterNew}
 \title{mainScatterNew}
 \usage{
-mainScatterNew(input = NULL, data = NULL, source = NULL)
+mainScatterNew(input = NULL, data = NULL, cond_names = NULL, source = NULL)
 }
 \arguments{
 \item{input, }{input params}
 
 \item{data, }{dataframe that has log2FoldChange and log10padj values}
+
+\item{cond_names}{condition names}
 
 \item{source, }{for event triggering to select genes}
 }
