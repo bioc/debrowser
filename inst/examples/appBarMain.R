@@ -10,7 +10,7 @@ header <- dashboardHeader(
 sidebar <- dashboardSidebar(  sidebarMenu(id="DEAnlysis",
       menuItem("BarMain", tabName = "BarMain"),
       textInput("genename", "Gene/Region Name", value = "Foxa3" ),
-      plotSizeMarginsUI("barmain", h=400, t = 30)
+      plotSizeMarginsUI("barmain", h=200, t = 30)
 ))
 
 body <- dashboardBody(

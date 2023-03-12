@@ -367,7 +367,7 @@ getMergedComparison <- function(dc = NULL, nc = NULL, input = NULL){
 #' Gathers the merged comparison data to be used within the
 #' DEBrowser.
 #'
-#' @param merged, merged data 
+#' @param dc, all data 
 #' @param nc, the number of comparisons
 #' @param input, input params
 #' @return data

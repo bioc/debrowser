@@ -4,6 +4,7 @@ library(Harman)
 options(warn =-1)
 source("../../R/batcheffect.R")
 source("../../R/funcs.R")
+source("../../R/pca.R")
 header <- dashboardHeader(
     title = "DEBrowser Batch Effect"
 )

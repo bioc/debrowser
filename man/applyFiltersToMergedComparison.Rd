@@ -7,11 +7,11 @@
 applyFiltersToMergedComparison(dc = NULL, nc = NULL, input = NULL)
 }
 \arguments{
+\item{dc, }{all data}
+
 \item{nc, }{the number of comparisons}
 
 \item{input, }{input params}
-
-\item{merged, }{merged data}
 }
 \value{
 data

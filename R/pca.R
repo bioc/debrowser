@@ -50,14 +50,15 @@ debrowserpcaplot <- function(input = NULL, output = NULL, session = NULL, pcadat
         shinydashboard::box(
         collapsible = TRUE, title = "PCA Plot", status = "primary", 
         solidHeader = TRUE, width = NULL,
+        div(style = 'overflow-x: scroll'),
         draggable = TRUE, plotlyOutput(session$ns("pca1"), 
-        height= input$height, width=input$width, inline=TRUE) 
+        height= input$height, width=input$width, inline=FALSE) 
         ),
         shinydashboard::box(
         collapsible = TRUE, title = "Loadings", status = "primary", 
         solidHeader = TRUE, width = NULL,
         draggable = TRUE,  plotlyOutput(session$ns("pca2"), 
-        height= input$height, width=input$width, inline=TRUE) )) ) 
+        height= input$height, width=input$width, inline=FALSE) )) ) 
         )
     })
     output$pca1 <- renderPlotly({
