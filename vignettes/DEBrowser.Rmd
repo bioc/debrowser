@@ -108,7 +108,7 @@ values must contain the gene, transcript(s), and the sample raw count values
 you wish to enter into DEBrowser.
 
 If you do not have a dataset to upload, you can use the built in demo data file by clicking on the 'Load Demo (Vernia et al.)!' button.  To view the entire demo data file, you can download
-this demo set: https://bioinfo.umassmed.edu/pub/debrowser/simple_demo.tsv . For another example, try our full dataset (Vernia et. al): https://bioinfo.umassmed.edu/pub/debrowser/advanced_demo.tsv .
+this demo set: https://umms.dolphinnext.com/pub/debrowser/simple_demo.tsv . For another example, try our full dataset (Vernia et. al): https://umms.dolphinnext.com/pub/debrowser/advanced_demo.tsv .
 
 The structure of the count data files are shown below:
 
@@ -120,7 +120,7 @@ The structure of the count data files are shown below:
 
 Please also note that, DEBrowser reads the gene names from the first column and skips other non numerical columns and starts reading the quantification values from the 3rd column in this case.
 
-In addition to the count data file; you need to upload metadata file to correct for batch effects or any other normalizing conditions you might want to address that might be within your results. To handle for these conditions, simply create a metadata file by using the example table at below or download sample file from following link: <https://bioinfo.umassmed.edu/pub/debrowser/simple_demo_meta.txt>
+In addition to the count data file; you need to upload metadata file to correct for batch effects or any other normalizing conditions you might want to address that might be within your results. To handle for these conditions, simply create a metadata file by using the example table at below or download sample file from following link: <https://umms.dolphinnext.com/pub/debrowser/simple_demo_meta.txt>
 
 
 | sample       | batch | condition|
@@ -829,7 +829,7 @@ within the GO term plots.
 
 ## Log2 fold change comparison for PPARα pathway
     
-1) **Upload Data:** To begin the analysis, download full dataset (Vernia et. al) <https://bioinfo.umassmed.edu/pub/debrowser/advanced_demo.tsv> and full metadata <https://bioinfo.umassmed.edu/pub/debrowser/advanced_meta.tsv> on your computer. Then click **browse** button, and select downloaded files from your computer. Please keep **Separator** as **Tab** while this processes. Finally click **upload** button to see **Upload Summary**. Now you can click on **Filter** button to start **Low Count Filtering**.
+1) **Upload Data:** To begin the analysis, download full dataset (Vernia et. al) <https://umms.dolphinnext.com/pub/debrowser/advanced_demo.tsv> and full metadata <https://umms.dolphinnext.com/pub/debrowser/advanced_meta.tsv> on your computer. Then click **browse** button, and select downloaded files from your computer. Please keep **Separator** as **Tab** while this processes. Finally click **upload** button to see **Upload Summary**. Now you can click on **Filter** button to start **Low Count Filtering**.
 
 2) **Low Count Filtering:** Select **Max** method with cutoff 10 (which filter genes where maximum count for each gene across all samples are less than 10), then click **Filter** button which is located at the center of the page. We are going to skip normalization and batch effect correction step by clicking 'Go to DE Analysis' button.
         
@@ -893,7 +893,7 @@ We will rename column names as follows and add new column called **chow.wt** whi
     * **foldChange.C3.vs.C4** to hfd.wt
     * **foldChange.C5.vs.C6** to hfd.dbl
         
-To confirm you can also download the final version of the fold2data from this link: <https://bioinfo.umassmed.edu/pub/debrowser/comparisons.tsv>
+To confirm you can also download the final version of the fold2data from this link: <https://umms.dolphinnext.com/pub/debrowser/comparisons.tsv>
     
 ![*Figure 55. example table conversion*](https://umms.dolphinnext.com/pub/debrowser/debrowser_pics2/example_table_conversion.png "Figure 55. example table conversion")
     
@@ -1064,39 +1064,21 @@ On Ubuntu 18.04 LTS, you can install required packages by following command:
 
 ## Autoload Data via Hyperlink
 
-DEBrowser also accepts TSV's via hyperlink by following conversion steps. First, using the API provided by Dolphin, we will convert TSV into an html represented TSV using this website::
+DEBrowser also accepts JSON files via hyperlink.
 
-	https://dolphin.umassmed.edu/public/api/
-
-The two parameters it accepts (and examples) are:
-
-	1. source=https://bioinfo.umassmed.edu/pub/debrowser/advanced_demo.tsv
-	2. format=JSON
-
-Leaving you with a hyperlink for::
-
-	https://dolphin.umassmed.edu/public/api/?source=https://bioinfo.umassmed.edu/pub/debrowser/advanced_demo.tsv&format=JSON
-
-Next you will need to encode the url so you can pass it to the DEBrowser website.
-You can find multiple url encoders online, such as the one located at `this
-link. <https://www.url-encode-decode.com/>`_.
-
-Encoding our URL will turn it into this::
-
-	http%3A%2F%2Fdolphin.umassmed.edu%2Fpublic%2Fapi%2F%3Fsource%3Dhttp%3A%2F%2Fbioinfo.umassmed.edu%2Fpub%2Fdebrowser%2Fadvanced_demo.tsv%26format%3DJSON
+    1. jsonobject=https://umms.dolphinnext.com/pub/debrowser/advanced_demo_org.json
+	
 
 Now this link can be used in debrowser as::
 
-	https://debrowser.umassmed.edu:443/debrowser/R/
+	https://debrowser.umassmed.edu/?jsonobject=https://umms.dolphinnext.com/pub/debrowser/advanced_demo_org.json
 
-It accepts two parameters::
 
-	1. jsonobject= http%3A%2F%2Fdolphin.umassmed.edu%2Fpublic%2Fapi%2F%3Fsource%3Dhttp%3A%2F%2Fbioinfo.umassmed.edu%2Fpub%2Fdebrowser%2Fadvanced_demo.tsv%26format%3DJSON
-	2. title= no
+If you'd like to add metadata::
 
-The finished product of the link will look like this::
+    2. meta=https://umms.dolphinnext.com/pub/debrowser/advanced_meta.json
 
-	https://debrowser.umassmed.edu:443/debrowser/R/?jsonobject=https://dolphin.umassmed.edu/public/api/?source=https://bioinfo.umassmed.edu/pub/debrowser/advanced_demo.tsv&format=JSON&title=no
+	https://debrowser.umassmed.edu/?jsonobject=https://umms.dolphinnext.com/pub/debrowser/advanced_demo_org.json&meta=https://umms.dolphinnext.com/pub/debrowser/advanced_meta.json
 
 Inputting this URL into your browser will automatically load in that tsv to be analyzed by DEBrowser!
 
