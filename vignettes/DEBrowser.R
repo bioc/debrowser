@@ -1,4 +1,4 @@
-## ---- echo=FALSE, results="hide", warning=FALSE--------------------------
+## ---- echo=FALSE, results="hide", warning=FALSE-------------------------------
 suppressPackageStartupMessages({
     library(gplots)
     library(ggplot2)

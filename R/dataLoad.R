@@ -35,18 +35,16 @@ debrowserdataload <- function(input = NULL, output = NULL, session = NULL, nextp
     jsonobj<-query$jsonobject
         
     # To test json load;
-    # It accepts three parameters:
-    # 1. jsonobject=https%3A%2F%2Fdolphin.umassmed.edu%2Fpublic%2Fapi%2F%3Fsource%3Dhttps%3A%2F%2Fbioinfo.umassmed.edu%2Fpub%2Fdebrowser%2Fadvanced_demo.tsv%26format%3DJSON
-    # 2. meta=meta=https%3A%2F%2Fdolphin.umassmed.edu%2Fpublic%2Fapi%2F%3Fsource%3Dhttps%3A%2F%2Fbioinfo.umassmed.edu%2Fpub%2Fdebrowser%2Fsimple_meta.tsv%26format%3DJSON
-    # 3. title=no
+    # It accepts two parameters:
+    # 1. jsonobject=https://debrowser.umassmed.edu/?jsonobject=https://umms.dolphinnext.com/pub/debrowser/advanced_demo_org.json
+    # 2. meta=https://umms.dolphinnext.com/pub/debrowser/advanced_meta.json
     # The finished product of the link will look like this without metadata:
     # 
-    # https://127.0.0.1:3427/debrowser/R/?jsonobject=https%3A%2F%2Fdolphin.umassmed.edu%2Fpublic%2Fapi%2F%3Fsource%3Dhttps%3A%2F%2Fbioinfo.umassmed.edu%2Fpub%2Fdebrowser%2Fadvanced_demo.tsv%26format%3DJSON&title=no
+    # https://127.0.0.1:3427/debrowser/R/?jsonobject=https://debrowser.umassmed.edu/?jsonobject=https://umms.dolphinnext.com/pub/debrowser/advanced_demo_org.json
     #        
     #  With metadata
     #
-    #http://127.0.0.1:3427/?jsonobject=https%3A%2F%2Fdolphin.umassmed.edu%2Fpublic%2Fapi%2F%3Fsource%3Dhttps%3A%2F%2Fbioinfo.umassmed.edu%2Fpub%2Fdebrowser%2Fsimple_demo.tsv%26format%3DJSON&meta=https%3A%2F%2Fdolphin.umassmed.edu%2Fpublic%2Fapi%2F%3Fsource%3Dhttps%3A%2F%2Fbioinfo.umassmed.edu%2Fpub%2Fdebrowser%2Fsimple_meta.tsv%26format%3DJSON
-    #
+    #http://127.0.0.1:3427/?jsonobject=https://debrowser.umassmed.edu/?jsonobject=https://umms.dolphinnext.com/pub/debrowser/advanced_demo_org.json&meta=https://umms.dolphinnext.com/pub/debrowser/advanced_meta.json
     #
     if (!is.null(jsonobj))
     {
@@ -65,6 +63,7 @@ debrowserdataload <- function(input = NULL, output = NULL, session = NULL, nextp
         
         metadatatable <- NULL
         jsonmet <-query$meta
+        print(jsonmet)
         if(!is.null(jsonmet)){
             raw <- RCurl::getURL(jsonmet, .opts = list(ssl.verifypeer = FALSE),
                 crlf = TRUE)
@@ -73,6 +72,7 @@ debrowserdataload <- function(input = NULL, output = NULL, session = NULL, nextp
             
             metadatatable<-data.frame(data,
                 stringsAsFactors = TRUE)
+            print(metadatatable)
             
         }else{
             metadatatable <- cbind(colnames(ldata$count), 1)
