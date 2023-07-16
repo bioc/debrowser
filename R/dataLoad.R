@@ -33,6 +33,10 @@ debrowserdataload <- function(input = NULL, output = NULL, session = NULL, nextp
     observe({
     query <- parseQueryString(session$clientData$url_search)
     jsonobj<-query$jsonobject
+    type = ""
+    if (!is.null(query$type)){
+        type <- query$type
+    }
         
     # To test json load;
     # It accepts two parameters:
@@ -48,9 +52,18 @@ debrowserdataload <- function(input = NULL, output = NULL, session = NULL, nextp
     #
     if (!is.null(jsonobj))
     {
-        raw <- RCurl::getURL(jsonobj, .opts = list(ssl.verifypeer = FALSE),
-             crlf = TRUE)
-        data <- fromJSON(raw, simplifyDataFrame = TRUE)
+        if (type == "nojson"){
+            ex <- strsplit(basename(jsonobj), split="\\.")[[1]]
+            if (ex[-1] == "tsv"){
+                data <- read.delim(jsonobj)
+            } else {
+                data <- read.csv(jsonobj) 
+            }
+        } else {
+            raw <- RCurl::getURL(jsonobj, .opts = list(ssl.verifypeer = FALSE),
+                 crlf = TRUE)
+            data <- fromJSON(raw, simplifyDataFrame = TRUE)
+        }
         colnames(data) <- gsub("\\s+|\\.|\\-", "_", colnames(data))
         jsondata<-data.frame(data,stringsAsFactors = TRUE)
         
@@ -59,22 +72,33 @@ debrowserdataload <- function(input = NULL, output = NULL, session = NULL, nextp
         jsondata[,c(1:ncol(jsondata))] <- sapply(
             jsondata[,c(1:ncol(jsondata))], as.numeric)
         jsondata <- jsondata[,sapply(jsondata, is.numeric)]
-        ldata$count <- jsondata
         
         metadatatable <- NULL
         jsonmet <-query$meta
-        print(jsonmet)
+
         if(!is.null(jsonmet)){
-            raw <- RCurl::getURL(jsonmet, .opts = list(ssl.verifypeer = FALSE),
-                crlf = TRUE)
-            data <- fromJSON(raw, simplifyDataFrame = TRUE)
+            if (type == "nojson"){
+                ex <- strsplit(basename(jsonmet), split="\\.")[[1]]
+                if (ex[-1] == "tsv"){
+                    data <- read.delim(jsonmet)
+                } else {
+                    data <- read.csv(jsonmet)
+                }
+            } else {
+                raw <- RCurl::getURL(jsonmet, .opts = list(ssl.verifypeer = FALSE),
+                    crlf = TRUE)
+                data <- fromJSON(raw, simplifyDataFrame = TRUE)
+            }
             data[,1] <- gsub("\\s+|\\.|\\-", "_", data[,1])
             
             metadatatable<-data.frame(data,
                 stringsAsFactors = TRUE)
-            print(metadatatable)
-            
+            cnames <-  names(jsondata)
+            selectcols <-  cnames[cnames %in%  metadatatable[,1]] 
+            ldata$count <- jsondata[, selectcols]
+            print(dim(ldata$count))
         }else{
+            ldata$count <- jsondata
             metadatatable <- cbind(colnames(ldata$count), 1)
             colnames(metadatatable) <- c("Sample", "Batch")
         }
