@@ -445,8 +445,9 @@ togglePanels <- function(num = NULL, nums = NULL, session = NULL){
 getTableStyle <- function(dat = NULL, input = NULL,
     padj = c("padj"), foldChange=c("foldChange"), DEsection = TRUE){
     if (is.null(dat)) return (NULL)
+    
     a <- dat
-    if(!is.null(padj) && padj != "" && DEsection)
+    if(!is.null(padj) && DEsection && all(padj %in% names(dat$x$data) ))
         a <- a %>% formatStyle(
             padj,
             color = styleInterval(c(0, input$padj),
@@ -454,7 +455,7 @@ getTableStyle <- function(dat = NULL, input = NULL,
             backgroundColor = styleInterval(
             input$padj, c('green', 'white'))
         )
-    if(!is.null(foldChange) && foldChange != "" && DEsection)
+    if(!is.null(foldChange) && DEsection && all( foldChange %in% names(dat$x$data) ) )
         a <- a %>%
             formatStyle(
             foldChange,
