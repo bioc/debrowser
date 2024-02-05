@@ -157,7 +157,7 @@ getConditionSelector<- function(num=NULL, choices = NULL, selected = NULL) {
     if (is.null(num)) return(NULL)
     if (!is.null(choices))
         list(column(3, selectInput(paste0("condition", num),
-            label = paste0("Condition ", num, ifelse(num %% 2 == 0, "(Nominator)", "(Denominator)")),
+            label = paste0("Condition ", num, ifelse(num %% 2 == 0, "(Numerator)", "(Denominator)")),
             choices = choices, multiple = TRUE,
             selected = selected)))
 }
@@ -182,7 +182,7 @@ getConditionSelectorFromMeta <- function(metadata = NULL, input = NULL, index = 
     choices = NULL, selected = NULL) {
     if (is.null(metadata)) return(NULL)
      a <- list(column(6, selectInput(paste0("condition", num),
-            label = paste0("Condition ", num, ifelse(num %% 2 == 0, "(Nominator)", "(Denominator)")),
+            label = paste0("Condition ", num, ifelse(num %% 2 == 0, "(Numerator)", "(Denominator)")),
             choices = choices, multiple = TRUE,
             selected = selected)))
 
@@ -223,7 +223,7 @@ getConditionSelectorFromMeta <- function(metadata = NULL, input = NULL, index = 
         }
     
         a <- list(column(6, selectInput(paste0("condition", num),
-            label = paste0("Condition ", num, ifelse(num %% 2 == 0, "(Nominator)", "(Denominator)")),
+            label = paste0("Condition ", num, ifelse(num %% 2 == 0, "(Numerator)", "(Denominator)")),
             choices = choices, multiple = TRUE,
             selected = selected)))
         }
